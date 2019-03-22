@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <title>List Of NGO's: Map</title>
+            <link rel="stylesheet" href="">
+            
+
+    
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCDMaWf2ogoePpoT5x_YvX1jQ9faoRfawQ&language=en®ion=US" type="text/javascript"></script>
+
+<style type="text/css">
+      #sndmap { height:800px;width:1200px;margin:100px; }
+</style>
+
+<script type="text/javascript">
+    var sndvar = null;
+    var sndvar_markers = [];
+    var sndvar_rectangles = [];
+    var sndvar_circles = [];
+    var sndvar_polygons = [];
+    var sndvar_polylines = [];
+    var prev_infowindow_sndvar = null;
+    var zoom_level = 4
+    var quality = 5
+    var type = []
+
+    var top_raw_markers = [];
+
+    function initialize_sndvar() {
+        document.getElementById('sndmap').style.display = 'block';
+        sndvar = new google.maps.Map(
+        document.getElementById('sndmap'), {
+            center: new google.maps.LatLng(21.787351, 81.165663),
+            zoom: parseInt(zoom_level),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoomControl: false,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: true,
+            rotateControl: true,
+            scrollwheel: true,
+            fullscreenControl: true
+        });
+
+        // add gmap markers
+        var raw_markers = top_raw_markers
+        for(i=0; i<raw_markers.length;i++) {
+            sndvar_markers[i] = new google.maps.Marker({
+                position: new google.maps.LatLng(raw_markers[i].lat, raw_markers[i].lng),
+                map: sndvar,
+                icon: raw_markers[i].icon,
+                title: raw_markers[i].title ? raw_markers[i].title : null
+            });
+
+           if(raw_markers[i].infobox)
+           {
+                google.maps.event.addListener(
+                        sndvar_markers[i],
+                        'click',
+                        getInfoCallback(sndvar, raw_markers[i].infobox)
+                );
+           }
+        }
+
+        
+
+        // add rectangles
+          var raw_rectangles = [];
+        for(i = 0; i < 0; i++) {
+            sndvar_rectangles[i] = new google.maps.Rectangle({
+                strokeColor: raw_rectangles[i].stroke_color,
+                strokeOpacity: raw_rectangles[i].stroke_opacity,
+                strokeWeight: raw_rectangles[i].stroke_weight,
+                fillColor: raw_rectangles[i].fill_color,
+                fillOpacity: raw_rectangles[i].fill_opacity,
+                map: sndvar,
+                bounds: {
+                    north: raw_rectangles[i].bounds.north,
+                    east: raw_rectangles[i].bounds.east,
+                    south: raw_rectangles[i].bounds.south,
+                    west: raw_rectangles[i].bounds.west },
+            });
+
+           if(raw_rectangles[i].infobox)
+           {
+                google.maps.event.addListener(
+                        sndvar_rectangles[i],
+                        'click',
+                        getInfoCallback(sndvar, raw_rectangles[i].infobox)
+                );
+           }
+        }
+
+        // add circles
+        var raw_circles = [];
+        for(i = 0; i < 0; i++) {
+            sndvar_circles[i] = new google.maps.Circle({
+                strokeColor: raw_circles[i].stroke_color,
+                strokeOpacity: raw_circles[i].stroke_opacity,
+                strokeWeight: raw_circles[i].stroke_weight,
+                fillColor: raw_circles[i].fill_color,
+                fillOpacity: raw_circles[i].fill_opacity,
+                map: sndvar,
+                center: {
+                    lat: raw_circles[i].center.lat,
+                    lng: raw_circles[i].center.lng,
+                },
+                radius: raw_circles[i].radius
+            });
+
+           if(raw_circles[i].infobox)
+           {
+                google.maps.event.addListener(
+                        sndvar_circles[i],
+                        'click',
+                        getInfoCallback(sndvar, raw_circles[i].infobox)
+                );
+           }
+        }
+
+        // add polygons
+        var raw_polygons = [];
+        for(i = 0; i < 0; i++) {
+            sndvar_polygons[i] = new google.maps.Polygon({
+                strokeColor: raw_polygons[i].stroke_color,
+                strokeOpacity: raw_polygons[i].stroke_opacity,
+                strokeWeight: raw_polygons[i].stroke_weight,
+                fillOpacity: raw_polygons[i].fill_opacity,
+                fillColor: raw_polygons[i].fill_color,
+                path: raw_polygons[i].path,
+                map: sndvar,
+                geodesic: true
+            });
+
+           if(raw_polygons[i].infobox)
+           {
+                google.maps.event.addListener(
+                        sndvar_polygons[i],
+                        'click',
+                        getInfoCallback(sndvar, raw_polygons[i].infobox)
+                );
+           }
+        }
+
+        // add polylines
+        var raw_polylines = [];
+        for(i = 0; i < 0; i++) {
+            sndvar_polylines[i] = new google.maps.Polyline({
+                strokeColor: raw_polylines[i].stroke_color,
+                strokeOpacity: raw_polylines[i].stroke_opacity,
+                strokeWeight: raw_polylines[i].stroke_weight,
+                path: raw_polylines[i].path,
+                map: sndvar,
+                geodesic: true
+            });
+
+           if(raw_polylines[i].infobox)
+           {
+                google.maps.event.addListener(
+                        sndvar_polylines[i],
+                        'click',
+                        getInfoCallback(sndvar, raw_polylines[i].infobox)
+                );
+           }
+        }
+
+        
+    }
+
+    function getInfoCallback(map, content) {
+        var infowindow = new google.maps.InfoWindow({content: content});
+        return function(ev) {
+            if( prev_infowindow_sndvar ) {
+                prev_infowindow_sndvar.close();
+            }
+            prev_infowindow_sndvar = infowindow;
+            infowindow.setPosition(ev.latLng);
+            infowindow.setContent(content);
+            infowindow.open(map, this);
+        };
+    }
+
+    
+        google.maps.event.addDomListener(window, 'load', initialize_sndvar);
+    
+
+</script>
+    </head>
+    <body>
+        <div id="sndmap" class="map"></div>
+        <div class="slidecontainer" style="position: absolute; top: 300px; left: 80%;margin-right: 200px;border:1px solid black;">
+            <label>Zoom</label>
+  <input type="range" min="4" max="15" value="4" class="slider" id="zoomSlider" onclick="zoomSlide(this.value)">
+  <label>Quality</label>
+  <input type="range" min="1" max="5" value="5" class="slider" id="qualitySlider" onclick="qualitySlide(this.value)">
+<label class="switch">NGO
+  <input type="checkbox" id="NGO" name="Type" value="NGO" onchange="handleType(this)">
+</label><br>
+<label class="switch">Charity
+  <input type="checkbox" id="Charity" name="Type" value="Charity" onchange="handleType(this)">
+</label><br>
+<label class="switch">Trust
+  <input type="checkbox" id="Trust" name="Type" value="Trust" onchange="handleType(this)">
+</label>
+</div>
+ </body>
+    <script type="text/javascript">
+
+        function mapUpdate(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              //document.getElementById("demo").innerHTML =
+              top_raw_markers = JSON.parse(this.responseText).markers
+              google.maps.event.trigger(sndvar, 'resize');
+              initialize_sndvar()
+            }
+                };
+              xhttp.open("GET", "http://127.0.0.1:5000/app?zoom_level="+zoom_level+"&quality="+quality+"&type="+type, 
+                true);
+              xhttp.send();
+        }
+
+        function handleType(checkbox) {
+            if(checkbox.checked == true){
+                if(type.indexOf(checkbox.value) == -1){
+                    type.push(checkbox.value)
+                    mapUpdate()
+                }
+        }else{
+            if(type.length == 1){
+                        type = []
+                        mapUpdate()
+                    }
+            else if(type.indexOf(checkbox.value) > 0){
+                   
+                    type.splice(type.indexOf(checkbox.value), 1);
+                    mapUpdate()
+                }
+           }
+        }
+
+        function zoomSlide(val){
+            console.log('zoom ' + val);
+            zoom_level = val;
+            mapUpdate()
+        }
+        function qualitySlide(val){
+            console.log('Quality '+val);
+            quality = val;
+            mapUpdate();
+        }
+    </script>
+</html>

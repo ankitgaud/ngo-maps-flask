@@ -13,8 +13,8 @@ from io import BytesIO
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['GOOGLEMAPS_KEY'] = "AIzaSyCDMaWf2ogoePpoT5x_YvX1jQ9faoRfawQ"
-GoogleMaps(app, key="AIzaSyCDMaWf2ogoePpoT5x_YvX1jQ9faoRfawQ")
+app.config['GOOGLEMAPS_KEY'] = "your_api_key"
+GoogleMaps(app, key="your_api_key")
 
 # Load List
 df_ngo = pd.read_csv('./df_ngo.csv', header=[0])
